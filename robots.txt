@@ -1,0 +1,5 @@
+User-agent: *
+Allow: /
+Disallow: /go
+Disallow: /player
+Sitemap: https://video-cloak.vercel.app/sitemap.xml

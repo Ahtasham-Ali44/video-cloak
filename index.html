@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>VideoCloak — Video Preview Link Generator for All Social Media</title>
+<meta name="description" content="Free video cloaking tool: you give your video and your destination link, VideoCloak creates one shareable link that shows a playing video preview on Facebook, X, Telegram, LinkedIn and Discord, a poster preview on WhatsApp, and opens your destination on click — for every social platform.">
+<link rel="canonical" href="https://video-cloak.vercel.app/">
+<meta name="robots" content="index, follow">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://video-cloak.vercel.app/">
+<meta property="og:site_name" content="VideoCloak">
+<meta property="og:title" content="VideoCloak — Video Preview Link Generator for All Social Media">
+<meta property="og:description" content="Paste your video + your destination link. Get one link: video preview in the feed, destination on click.">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="VideoCloak — Video Preview Link Generator">
+<meta name="twitter:description" content="One link for all social media: video preview in the feed, destination on click.">
+<script type="application/ld+json">{"@context":"https://schema.org","@type":"WebApplication","name":"VideoCloak","url":"https://video-cloak.vercel.app/","applicationCategory":"UtilitiesApplication","operatingSystem":"Web","description":"Create a video preview link: your video shows in social feeds, a click opens your destination link.","offers":{"@type":"Offer","price":"0","priceCurrency":"USD"}}</script>
+<style>
+*{box-sizing:border-box}body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Arial,sans-serif;background:#070d1f;color:#eef2ff}a{color:#7db2ff}
+header,main,footer{max-width:980px;margin:0 auto;padding:20px}h1{font-size:34px;margin:10px 0 6px}h1 span{color:#3b82f6}.sub{color:#cbd5e1;line-height:1.6}
+.card{background:#0e1a38;border:1px solid #1e3a8a;border-radius:16px;padding:20px;margin-bottom:20px}h2{margin:0 0 10px;font-size:21px}
+label{display:block;font-weight:700;margin:16px 0 6px}input,textarea,select{width:100%;padding:12px;border-radius:10px;border:1px solid #334155;background:#0b1226;color:#fff;font-size:15px}textarea{min-height:56px;resize:vertical}
+button{background:#2563eb;color:#fff;border:0;padding:12px 20px;border-radius:999px;font-weight:700;cursor:pointer;font-size:15px}button.secondary{background:#1e293b;border:1px solid #334155}button:hover{opacity:.9}
+.row{display:flex;gap:10px;flex-wrap:wrap;margin-top:14px}.muted{color:#94a3b8;font-size:14px;line-height:1.65}.ok{color:#4ade80;font-weight:700}
+video.pv{width:100%;max-width:420px;border-radius:12px;background:#000;cursor:pointer}
+table{width:100%;border-collapse:collapse;font-size:14px}td,th{border-bottom:1px solid #1e293b;padding:9px 6px;text-align:left;vertical-align:top}th{color:#7db2ff}
+.share a{display:inline-block;background:#1e293b;border:1px solid #334155;color:#fff;text-decoration:none;padding:9px 14px;border-radius:999px;font-weight:600;font-size:14px;margin:0 6px 8px 0}
+.badge{display:inline-block;background:#172554;border:1px solid #2563eb;color:#bfdbfe;border-radius:999px;padding:3px 10px;font-size:12px;font-weight:700;margin-right:6px}
+</style>
+</head>
+<body>
+<header>
+<h1>Video<span>Cloak</span></h1>
+<p class="sub"><b>Alag tool, sirf video ke liye.</b> Video bhi aap doge, destination link bhi aap doge — tool sirf ek aisa link banayega jo <b>har social media</b> par asani se use ho: post karo to video preview chale, click karo to destination khule.</p>
+<p class="sub"><span class="badge">Facebook</span><span class="badge">WhatsApp</span><span class="badge">X / Twitter</span><span class="badge">Telegram</span><span class="badge">LinkedIn</span><span class="badge">Discord</span><span class="badge">Threads</span><span class="badge">Pinterest</span><span class="badge">Reddit</span><span class="badge">Viber</span><span class="badge">TikTok</span><span class="badge">Instagram</span></p>
+</header>
+<main>
+<section class="card">
+<h2>1 — Apni video do</h2>
+<label for="vid">Video ka direct .mp4 link *</label>
+<input id="vid" type="url" placeholder="https://example.com/meri-video.mp4">
+<p class="muted">Video file ka seedha public link chahiye (jaise Cloudinary / apni hosting par upload ki hui video). YouTube, TikTok ya Facebook ke <i>page</i> ka link kaam nahi karega — wo page hai, video file nahi.</p>
+<label for="file">— ya pehle apni video file yahan check karo (upload preview)</label>
+<input id="file" type="file" accept="video/*">
+<div id="fileBox" style="display:none;margin-top:12px">
+<video id="filePrev" class="pv" controls muted loop playsinline></video>
+<div class="row"><button class="secondary" type="button" id="capBtn">Is frame ko poster bana kar download karo</button></div>
+<p class="muted">Ye preview sirf check karne ke liye hai. Shareable link ke liye video ka public .mp4 link lazmi hai, kyunki Facebook / WhatsApp ka server aap ke phone/computer se video nahi le sakta — wo usi link se video uthata hai.</p>
+</div>
+<div class="row"><button class="secondary" type="button" id="sampleBtn">Sample video se test karo</button></div>
+<label for="poster">Poster image link (optional — video ka thumbnail)</label>
+<input id="poster" type="url" placeholder="https://… image URL — khali chhoro to chalega, poster wala preview kamzor hoga">
+<label for="ratio">Video ki shape (size)</label>
+<select id="ratio">
+<option value="1280x720">16:9 — Chaudi video (Facebook / X / LinkedIn ke liye best)</option>
+<option value="720x1280">9:16 — Khari video / Reels style</option>
+<option value="1080x1080">1:1 — Square</option>
+<option value="1080x1350">4:5 — Portrait post</option>
+</select>
+</section>
+
+<section class="card">
+<h2>2 — Apna destination link do</h2>
+<label for="dest">Destination link * — click karne par yahi khulega</label>
+<input id="dest" type="url" placeholder="https://example.com/jahan-bhejna-hai">
+<label for="ptitle">Preview title</label>
+<input id="ptitle" type="text" placeholder="Video ke sath feed me dikhne wala title">
+<label for="pdesc">Preview description (optional)</label>
+<textarea id="pdesc" placeholder="Title ke neeche dikhne wali chhoti line"></textarea>
+<div class="row"><button id="genBtn">Cloaked video link banao</button></div>
+</section>
+
+<section class="card" id="resultCard" style="display:none">
+<h2>3 — Ye link har jagah post karo</h2>
+<label for="out">Tumhara cloaked video link</label>
+<input id="out" readonly>
+<div class="row">
+<button id="copyBtn">Copy link</button>
+<button class="secondary" id="testBtn">Link test karo (destination khulega)</button>
+<button class="secondary" id="playerBtn">Video player preview dekho</button>
+</div>
+<div style="margin-top:16px"><video id="pvVideo" class="pv" controls muted loop playsinline title="Preview — click destination test ke liye upar wala button use karo"></video>
+<div><small id="pvDomain" class="muted"></small><div><b id="pvTitle"></b></div><small id="pvDesc" class="muted"></small></div></div>
+<h3 style="margin:20px 0 8px">Ek click me share karo:</h3>
+<div class="share" id="shareBox"></div>
+<p class="muted"><b>Zaroori:</b> yehi lamba wala link use karna — TinyURL / short link mat banana, shortener video preview tod deta hai. Link dobara use karne ke liye ye page usay tumhare browser me save bhi kar deta hai (neeche "Tumhare banaye hue links").</p>
+<div id="savedBox"></div>
+</section>
+
+<section class="card">
+<h2>Har social media par kya hoga — saaf table</h2>
+<table>
+<tr><th>Platform</th><th>Preview</th><th>Click par</th></tr>
+<tr><td><b>Facebook</b></td><td>Video preview (og:video) — play wala card</td><td>Link/title click = destination. Play dabane par video wahi chalegi (Facebook ka apna rule)</td></tr>
+<tr><td><b>X / Twitter</b></td><td>Player card — video feed me chalti hai</td><td>Card click = destination / player</td></tr>
+<tr><td><b>Telegram</b></td><td>Video preview + poster</td><td>Destination</td></tr>
+<tr><td><b>LinkedIn</b></td><td>Video / poster preview card</td><td>Destination</td></tr>
+<tr><td><b>Discord / Slack / Reddit / Pinterest / Viber</b></td><td>Poster + video tags wala embed preview</td><td>Destination</td></tr>
+<tr><td><b>WhatsApp</b></td><td><b>Poster image</b> wala preview (WhatsApp og:video inline play support hi nahi karta)</td><td>Destination — bilkul image cloak ki tarah</td></tr>
+<tr><td><b>Instagram / Threads posts</b></td><td>Post ke andar link preview banta hi nahi (Instagram ka rule, kisi tool se nahi badalta) — link bio, story ya DM me do</td><td>Destination</td></tr>
+<tr><td><b>TikTok / Instagram — native video upload (Reel / TikTok video)</b></td><td>Video platform ke andar chalti hai</td><td><b>Video par click se destination NAHI khulta</b> — dono apps video tap par sirf play/pause karte hain, video ke andar link lagane ki ijazat hi nahi (paid Ad ke CTA button ke siwa). Neeche wala "Bio / Story" wala tareeqa use karo</td></tr>
+</table>
+<p class="muted">Ek hi link sab ke liye is liye chalta hai kyunki peeche har platform ke crawler ko usi ke hisab ke tags milte hain: Facebook/WhatsApp ko Open Graph video tags, X ko player card tags, baqiyon ko poster + title. Insaan ko har jagah foran (302) destination milta hai — koi dusra card, koi intezar nahi.</p>
+</section>
+
+
+<section class="card">
+<h2>4 — TikTok / Instagram ke liye (native video upload)</h2>
+<p class="muted">Sach ye hai: <b>TikTok ya Instagram par video upload karke, video par click se destination khulwana mumkin nahi</b> — dono apps me video par tap sirf play/pause karta hai, aur caption/comment ka link bhi clickable nahi hota. Ye un apps ka apna rule hai, koi bhi tool use nahi badal sakta. <b>Lekin wahi result in 3 tareeqon se milta hai:</b></p>
+<p class="muted">
+<b>Tareeqa 1 — Bio link (sab se asan, free):</b> apni video normal Reel / TikTok ki tarah upload karo. VideoCloak wala link apne profile ke <b>bio / website</b> wale box me lagao. Video ke akhir me aur caption me likho: "Link bio me hai". Viewer bio par click karega → seedha destination.<br><br>
+<b>Tareeqa 2 — Instagram Story link sticker (video par hi clickable):</b> wahi video Story me lagao, <b>Link sticker</b> add karke us me VideoCloak wala link dalo. Story dekhne wala sticker par click karega → destination. Ye wahid free tareeqa hai jis me video wali screen par hi clickable link aata hai.<br><br>
+<b>Tareeqa 3 — Paid Ad ka CTA button:</b> Instagram / TikTok par video ko Ad ki tarah chalao to video ke neeche <b>button</b> (Learn More / Shop Now) aata hai, usi button me destination link lagta hai. Click → destination. Ye paisay wala tareeqa hai.
+</p>
+<label for="capTpl">Caption template — copy karke Reel / TikTok caption me lagao</label>
+<textarea id="capTpl" readonly></textarea>
+<div class="row"><button class="secondary" type="button" id="capCopy">Caption copy karo</button></div>
+<label for="pinTpl">Pinned comment template</label>
+<textarea id="pinTpl" readonly></textarea>
+<div class="row"><button class="secondary" type="button" id="pinCopy">Comment copy karo</button></div>
+<p class="muted">Templates upar Step 3 me bane hue link aur title se khud bhar jati hain — pehle Step 1–3 pura karo.</p>
+</section>
+
+<section class="card">
+<h2>Kaise kaam karta hai?</h2>
+<p class="muted">1. Tum video ka .mp4 link aur apna destination link dete ho.<br>2. VideoCloak ek link banata hai: <code>/go?to=…&amp;vid=…&amp;img=…</code><br>3. Jab koi social app is link ka preview banata hai, usay video + poster + title milta hai.<br>4. Jab koi insaan click karta hai, wo seedha tumhare destination par pounch jata hai.</p>
+</section>
+</main>
+<footer class="muted">VideoCloak — free video preview link tool. Video aur destination dono user ke apne hote hain; tool kisi dusri site ya news outlet hone ka dawa nahi karta.</footer>
+<script>
+const $=id=>document.getElementById(id);
+$('sampleBtn').onclick=()=>{$('vid').value='https://interactive-examples.mdn.mozilla.net/media/cc0-videos/flower.mp4';if(!$('ptitle').value)$('ptitle').value='Sample video — test preview';alert('Sample video lag gaya hai. Ab Step 2 me apna destination link de kar link banao.');};
+let fileUrl='';
+$('file').addEventListener('change',e=>{
+  const f=e.target.files[0]; if(!f) return;
+  fileUrl=URL.createObjectURL(f); $('filePrev').src=fileUrl; $('fileBox').style.display='block';
+});
+$('capBtn').onclick=()=>{
+  const v=$('filePrev'); if(!v.videoWidth){alert('Pehle video chalao, phir frame capture karo.');return;}
+  const c=document.createElement('canvas'); c.width=v.videoWidth; c.height=v.videoHeight;
+  c.getContext('2d').drawImage(v,0,0);
+  const a=document.createElement('a'); a.href=c.toDataURL('image/jpeg',0.85); a.download='video-poster.jpg'; a.click();
+};
+function buildLink(){
+  const dest=$('dest').value.trim(), vid=$('vid').value.trim(), poster=$('poster').value.trim();
+  const title=$('ptitle').value.trim()||'Shared video', desc=$('pdesc').value.trim()||'Watch this video — open the link to continue.';
+  if(!dest||!/^https?:\/\//i.test(dest)){alert('Step 2 me sahi destination link do — https:// se shuru hona chahiye.');return null;}
+  if(!vid||!/^https?:\/\//i.test(vid)){alert('Step 1 me video ka direct link do — https:// se shuru hona chahiye.');return null;}
+  if(!/\.mp4($|\?)/i.test(vid)){alert('Ye direct .mp4 link nahi lag raha. Video file ka seedha link chahiye (…/video.mp4). YouTube/TikTok page link kaam nahi karega.');return null;}
+  if(poster&&!/^https?:\/\//i.test(poster)){alert('Poster link https:// se shuru hona chahiye, ya khali chhor do.');return null;}
+  const [vw,vh]=$('ratio').value.split('x');
+  const p=new URLSearchParams({to:dest,vid,title,desc,vw,vh}); if(poster)p.set('img',poster);
+  return {url:location.origin+'/go?'+p.toString(),dest,vid,poster,title,desc};
+}
+$('genBtn').onclick=()=>{
+  const r=buildLink(); if(!r) return;
+  $('out').value=r.url; $('resultCard').style.display='block';
+  const vv=$('pvVideo'); vv.src=r.vid; vv.poster=r.poster||'';
+  try{$('pvDomain').textContent=new URL(location.origin).hostname;}catch(e){}
+  $('pvTitle').textContent=r.title; $('pvDesc').textContent=r.desc;
+  const enc=encodeURIComponent(r.url), t=encodeURIComponent(r.title);
+  const shares=[
+    ['Facebook','https://www.facebook.com/sharer/sharer.php?u='+enc],
+    ['WhatsApp','https://wa.me/?text='+t+'%20'+enc],
+    ['Telegram','https://t.me/share/url?url='+enc+'&text='+t],
+    ['X','https://twitter.com/intent/tweet?url='+enc+'&text='+t],
+    ['LinkedIn','https://www.linkedin.com/sharing/share-offsite/?url='+enc],
+    ['Pinterest','https://pinterest.com/pin/create/button/?url='+enc+'&description='+t],
+    ['Reddit','https://www.reddit.com/submit?url='+enc+'&title='+t],
+    ['Viber','viber://forward?text='+t+'%20'+enc]
+  ];
+  $('shareBox').innerHTML=shares.map(s=>'<a target="_blank" rel="noopener" href="'+s[1]+'">'+s[0]+'</a>').join('');
+  try{const key='videocloak_links';const arr=JSON.parse(localStorage.getItem(key)||'[]');arr.unshift({url:r.url,title:r.title,at:Date.now()});localStorage.setItem(key,JSON.stringify(arr.slice(0,20)));renderSaved();}catch(e){}
+  fillTemplates(r);
+  $('out').select();
+  document.getElementById('resultCard').scrollIntoView({behavior:'smooth'});
+};
+function renderSaved(){
+  try{const arr=JSON.parse(localStorage.getItem('videocloak_links')||'[]'); if(!arr.length){$('savedBox').innerHTML='';return;}
+  $('savedBox').innerHTML='<h3 style="margin:16px 0 8px">Tumhare banaye hue links (is browser me save)</h3>'+arr.map(x=>'<p class="muted" style="word-break:break-all"><b>'+String(x.title||'').replace(/</g,'&lt;')+'</b><br>'+x.url+'</p>').join('');}catch(e){}
+}
+
+function fillTemplates(r){
+  $('capTpl').value = r.title + '\n\nPoora link mere bio me hai — wahan click karo 👇\n' + r.url;
+  $('pinTpl').value = '👉 Link bio me hai — profile par ja kar bio wale link par click karo, seedha yahi khulega.';
+}
+$('capCopy').onclick=async()=>{await navigator.clipboard.writeText($('capTpl').value);$('capCopy').textContent='Copied!';setTimeout(()=>$('capCopy').textContent='Caption copy karo',1500);};
+$('pinCopy').onclick=async()=>{await navigator.clipboard.writeText($('pinTpl').value);$('pinCopy').textContent='Copied!';setTimeout(()=>$('pinCopy').textContent='Comment copy karo',1500);};
+renderSaved();
+$('copyBtn').onclick=async()=>{await navigator.clipboard.writeText($('out').value);$('copyBtn').textContent='Copied!';setTimeout(()=>$('copyBtn').textContent='Copy link',1500);};
+$('testBtn').onclick=()=>{window.open($('out').value,'_blank');};
+$('playerBtn').onclick=()=>{
+  const vid=$('vid').value.trim(),dest=$('dest').value.trim(),poster=$('poster').value.trim(),title=$('ptitle').value.trim()||'Shared video';
+  const p=new URLSearchParams({vid,to:dest,title}); if(poster)p.set('img',poster);
+  window.open(location.origin+'/player?'+p.toString(),'_blank');
+};
+</script>
+</body>
+</html>
